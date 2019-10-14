@@ -1,0 +1,90 @@
+#include "Configuration.h"
+
+Configuration::Configuration(int* nums, int size) :
+	size(size)
+{
+	int index = 0;
+	table = new int* [size];
+	for (int i = 0; i < size; i++)
+	{
+		table[i] = new int[size];
+		for (int j = 0; j < size; j++)
+		{
+			table[i][j] = nums[index];
+			index++;
+		}
+	}
+}
+
+Configuration::Configuration(int size)
+{
+	int num = 1;
+	table = new int* [size];
+	for (int i = 0; i < size; i++)
+	{
+		table[i] = new int[size];
+		for (int j = 0; j < size; j++)
+		{
+			table[i][j] = num;
+			num++;
+		}
+	}
+}
+
+Configuration::~Configuration()
+{
+	for (int i = 0; i < size; i++) {
+		delete[] table[i];
+
+	}
+	delete[] table;
+}
+
+int** Configuration::getTable() const
+{
+	return table;
+}
+
+void Configuration::setTable(int* nums)
+{
+	int index = 0;
+	for (int i = 0; i < size; i++)
+	{
+		for (int j = 0; j < size; j++)
+		{
+			table[i][j] = nums[index];
+			index++;
+		}
+	}
+}
+
+bool Configuration::isFinal()
+{
+	return table[size - 1][size - 1] == -1;
+}
+
+Coord Configuration::getVoidTile()
+{
+	Coord voidTile;
+	for (int i = 0; i < size; i++)
+	{
+		for (int j = 0; j < size; j++)
+		{
+			if (table[i][j] == -1) {
+				voidTile.x = i;
+				voidTile.y = j;
+			}
+		}
+	}
+	return voidTile;
+}
+
+Coord* Configuration::getAvailableMoves()
+{
+	Coord voidTile = getVoidTile();
+	Coord* moves = new Coord[4];
+
+
+
+	return nullptr;
+}
