@@ -154,10 +154,12 @@
     <ClCompile Include="Configuration.cpp" />
     <ClCompile Include="coursework1.cpp" />
     <ClCompile Include="Database.cpp" />
+    <ClCompile Include="Graph.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Configuration.h" />
     <ClInclude Include="Database.h" />
+    <ClInclude Include="Graph.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
