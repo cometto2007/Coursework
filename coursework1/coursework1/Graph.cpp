@@ -9,6 +9,17 @@ Graph::Graph(vector<Edge>& edges, int n)
 	}
 }
 
+Graph::Graph(const Graph& src)
+{
+	adjList.resize(src.adjList.size());
+	setList(src.adjList);
+}
+
+void Graph::setList(vector<vector<Pair>> newAdjList)
+{
+	adjList = newAdjList;
+}
+
 void Graph::printGraph()
 {
 	for (int i = 0; i < adjList.size(); i++)

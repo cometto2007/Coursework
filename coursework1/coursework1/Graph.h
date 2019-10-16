@@ -15,6 +15,8 @@ class Graph
 {
 public:
 	Graph(vector<Edge>& edges, int n);
+	Graph(const Graph& src);
+	void setList(vector<vector<Pair>> adjList);
 	void printGraph();
 	void addEdge(Edge& e);
 	bool edgeExist(Edge& e);

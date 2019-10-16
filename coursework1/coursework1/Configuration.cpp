@@ -23,6 +23,16 @@ Configuration::Configuration(int size):
 	table[totalSize - 1] = -1;
 }
 
+Configuration::Configuration(const Configuration& src) :
+	rowSize(src.rowSize), totalSize(src.totalSize)
+{
+	table = new int[src.totalSize];
+	for (int i = 0; i < src.totalSize; i++)
+	{
+		table[i] = src.table[i];
+	}
+}
+
 Configuration::~Configuration()
 {
 	delete[] table;
@@ -39,19 +49,6 @@ void Configuration::setTable(int* nums)
 	{
 			table[i] = nums[i];
 	}
-}
-
-int Configuration::test()
-{
-	int* moves = getAvailableMoves();
-	int count = 0;
-	int voidTile = getVoidTile();
-	for (int i = 0; i < 4; i++)
-	{
-		swapTiles(voidTile, moves[i]);
-		count = makePermutations();
-	}
-	return count;
 }
 
 bool Configuration::isFinal()
@@ -79,7 +76,7 @@ int* Configuration::getAvailableMoves()
 	if (voidTile < rowSize) up = -1;
 	else up = voidTile - rowSize;
 
-	if (voidTile > totalSize - rowSize) down = -1;
+	if (voidTile >= totalSize - rowSize) down = -1;
 	else down = voidTile + rowSize;
 
 	if (voidTile % rowSize == 0) left = -1;
@@ -103,21 +100,13 @@ void Configuration::swapTiles(int index1, int index2)
 	table[index2] = temp;
 }
 
-int Configuration::makePermutations()
+void Configuration::print()
 {
-	if (!isFinal()) {
-		int* moves = getAvailableMoves();
-		int count = 0;
-		int voidTile = getVoidTile();
-		for (int i = 0; i < 4; i++)
-		{
-
-			if (moves[i] != -1) {
-				swapTiles(voidTile, moves[i]);
-				count = makePermutations() + 1;
-			}
+	for (int i = 0; i < totalSize; i++) {
+		cout << table[i] << "\t";
+		if ((i + 1) >= rowSize && (i + 1) % rowSize == 0) {
+			cout << "\n\n";
 		}
-		return count;
 	}
-	return 0;
+	cout << "\n\n\n";
 }
