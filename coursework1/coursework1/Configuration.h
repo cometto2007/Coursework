@@ -4,12 +4,12 @@
 class Configuration
 {
 public:
-	Configuration(int* nums, int size);
+	Configuration(vector<int> nums, int size);
 	Configuration(int size);
 	Configuration(const Configuration& src);
 	~Configuration();
-	int* getTable() const;
-	void setTable(int* nums);
+	vector<int> getTable() const;
+	void setTable(vector<int> nums);
 	bool isFinal();
 	int getVoidTile();
 	int* getAvailableMoves();
@@ -17,7 +17,7 @@ public:
 	void print();
 
 private:
-	int* table;
+	vector<int> table;
 	int rowSize;
 	int totalSize;
 };

@@ -1,9 +1,9 @@
 #include "Configuration.h"
 
-Configuration::Configuration(int* nums, int size):
+Configuration::Configuration(vector<int> nums, int size):
 	rowSize(size), totalSize(size * size)
 {
-	table = new int[totalSize];
+	table = vector<int>(totalSize);
 	for (int i = 0; i < totalSize; i++)
 	{
 			table[i] = nums[i];
@@ -14,19 +14,19 @@ Configuration::Configuration(int size):
 	rowSize(size), totalSize(size * size)
 {
 	int num = 1;
-	table = new int[totalSize];
+	table = vector<int>(0);
 	for (int i = 0; i < totalSize - 1; i++)
 	{
-		table[i] = num;
+		table.push_back(num);
 		num++;
 	}
-	table[totalSize - 1] = -1;
+	table.push_back(-1);
 }
 
 Configuration::Configuration(const Configuration& src) :
 	rowSize(src.rowSize), totalSize(src.totalSize)
 {
-	table = new int[src.totalSize];
+	table = vector<int>(src.totalSize);
 	for (int i = 0; i < src.totalSize; i++)
 	{
 		table[i] = src.table[i];
@@ -35,15 +35,15 @@ Configuration::Configuration(const Configuration& src) :
 
 Configuration::~Configuration()
 {
-	delete[] table;
+	table.clear();
 }
 
-int* Configuration::getTable() const
+vector<int> Configuration::getTable() const
 {
 	return table;
 }
 
-void Configuration::setTable(int* nums)
+void Configuration::setTable(vector<int> nums)
 {
 	for (int i = 0; i < totalSize; i++)
 	{

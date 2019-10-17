@@ -1,11 +1,11 @@
 #include "Graph.h"
 
-Graph::Graph(vector<Edge>& edges, int n)
+Graph::Graph(vector<Arch>& arches, int n)
 {
 	adjList.resize(n);
 
-	for (Edge& edge: edges) {
-		addEdge(edge);
+	for (Arch& arch: arches) {
+		addArch(arch.getSource(), arch.getDest(), arch.getLabel());
 	}
 }
 
@@ -15,38 +15,63 @@ Graph::Graph(const Graph& src)
 	setList(src.adjList);
 }
 
-void Graph::setList(vector<vector<Pair>> newAdjList)
+void Graph::setList(vector<vector<Arch>> newAdjList)
 {
 	adjList = newAdjList;
 }
 
 void Graph::printGraph()
 {
-	for (int i = 0; i < adjList.size(); i++)
+	for (rsize_t i = 0; i < adjList.size(); i++)
 	{
-		for (Pair v : adjList[i])
-			cout << "(" << i << ", " << v.first <<
-			", " << v.second << ") ";
+		for (Arch arch : adjList[i])
+			cout << "(" << i << ", " << arch.getDest() <<
+			", " << arch.getLabel() << ") ";
 		cout << endl;
 	}
 }
 
-void Graph::addEdge(Edge& e)
+void Graph::addConf(int src, int dest, int label, vector<int> conf)
 {
-	int src = e.src;
-	int dest = e.dest;
-	int label = e.label;
-
-	adjList[src].push_back(make_pair(dest, label));
+	if (!ArchExist(src, dest, label)) {
+		addArch(src, dest, label);
+	}
+	Arch* foundArch = getArch(src, dest, label);
+	if (!confExist(conf, *foundArch)) {
+		foundArch->addConf(conf);
+	}
 }
 
-bool Graph::edgeExist(Edge& e)
+void Graph::addArch(int src, int dest, int label)
 {
-	return edgeExist(e.src, e.dest, e.label);
+	adjList[src].push_back(Arch(src, dest, label, vector<int>(0)));
 }
 
-bool Graph::edgeExist(int src, int dest, int label)
+bool Graph::confExist(vector<int> conf, Arch arch)
 {
-	std::vector<Pair>::iterator it = std::find(adjList[src].begin(), adjList[src].end(), make_pair(dest, label));
-	return it != adjList[src].end();
+	return arch.confIsPresent(conf);
+}
+
+bool Graph::ArchExist(int src, int dest, int label)
+{
+	for (Arch a : adjList[src]) {
+		if (a.getSource() == src &&
+			a.getDest() == dest &&
+			a.getLabel() == label) {
+			return true;
+		}
+	}
+	return false;
+}
+
+Arch* Graph::getArch(int src, int dest, int label) {
+	for (rsize_t i = 0; i < adjList[src].size(); i++) {
+		Arch* arch = &(adjList[src][i]);
+		if (src == arch->getSource() &&
+			dest == arch->getDest() &&
+			label == arch->getLabel()) {
+			return arch;
+		}
+	}
+	return nullptr;
 }

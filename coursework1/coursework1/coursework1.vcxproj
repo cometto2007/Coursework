@@ -151,12 +151,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Arch.cpp" />
     <ClCompile Include="Configuration.cpp" />
     <ClCompile Include="coursework1.cpp" />
     <ClCompile Include="Database.cpp" />
     <ClCompile Include="Graph.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Arch.h" />
     <ClInclude Include="Configuration.h" />
     <ClInclude Include="Database.h" />
     <ClInclude Include="Graph.h" />
