@@ -1,5 +1,7 @@
 #include <iostream>
 #include <stack>
+#include <string>
+#include <algorithm>
 #include "Configuration.h"
 #include "Graph.h"
 
@@ -14,8 +16,8 @@ struct Move {
 	vector<int> conf;
 };
 
-bool confExist(vector<int> conf, vector<vector<int>>& confs) {
-	for (vector<int> c : confs) {
+bool confExist(int conf, vector<int>& confs) {
+	for (int c : confs) {
 		if (c == conf) {
 			return true;
 		}
@@ -23,7 +25,7 @@ bool confExist(vector<int> conf, vector<vector<int>>& confs) {
 	return false;
 }
 
-bool removeConf(vector<int> conf, vector<vector<int>>& confs) {
+bool removeConf(int conf, vector<int>& confs) {
 	for (rsize_t i = 0; i < confs.size(); i++) {
 		if (confs[i] == conf) {
 			confs.erase(confs.begin() + i);
@@ -32,9 +34,31 @@ bool removeConf(vector<int> conf, vector<vector<int>>& confs) {
 	return false;
 }
 
+int getWholeNumber(vector<int> conf) {
+
+	string s = "";
+	for (int i = 0; i < conf.size(); i++) {
+		s += to_string(conf[i]);
+	}
+	
+	return stoi(s);
+}
+
+void areThereDuplicates(vector<int> v) {
+	int dupl = 0;
+	sort(v.begin(), v.end());
+	for (int i = 0; i < v.size() - 1; i++) {
+		if (v[i] == v[i + 1]) {
+			dupl++;
+			i--;
+		}
+	}
+	cout << "duplicates are: " << dupl << "\n\n";
+}
+
 void test(Configuration& conf) {
 	stack<Move> remMoves;
-	vector<vector<int>> confs;
+	vector<int> confs;
 	Configuration* c;
 
 	int voidTile = conf.getVoidTile();
@@ -57,14 +81,14 @@ void test(Configuration& conf) {
 		if (c->isFinal()) {
 			// Make something to count the data
 
-			c->print();
-			cout << "\n" << i << " final\n\n";
-			i++;
+			//c->print();
+			//cout << "\n" << i << " final\n\n";
+			//i++;
 		}
-		else if (confExist(c->getTable(), confs)) {
-			removeConf(c->getTable(), confs);
+		else if (confExist(getWholeNumber(c->getTable()), confs)) {
+			removeConf(getWholeNumber(c->getTable()), confs);
 		} else {
-			confs.push_back(c->getTable());
+			confs.push_back(getWholeNumber(c->getTable()));
 			int* moves = c->getAvailableMoves();
 			int voidTile = c->getVoidTile();
 
@@ -76,6 +100,7 @@ void test(Configuration& conf) {
 			}
 		}
 		delete c;
+		areThereDuplicates(confs);
 	}
 }
 
