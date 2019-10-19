@@ -3,6 +3,8 @@
 #include <set>
 #include "UserInterface.h"
 #include "PuzzleUtility.h"
+#include "FileManager.h"
+
 
 using namespace std;
 
@@ -47,20 +49,18 @@ void insertConfiguration() {
 	}
 }
 
-void insertRandomConfiguration(int num) {
-	UserInterface::printCreateRandomConfigurationSection();
-
+vector<vector<int>> getRandomConfiguration(int num) {
+	vector<vector<int>> confs;
 	for (int i = 0; i < num; i++) {
-		vector<int> v = PuzzleUtility::genRandConf(20);
-		for (int i : v) {
-			cout << i << " ";
-		}
-		cout << "\n\n";
+		confs.push_back(PuzzleUtility::genRandConf(20));
 	}
+
+	return confs;
 }
 
 int main()
 {
+	FileManager fm;
 	int task = getTask();
 
 	switch (task) {
@@ -72,7 +72,7 @@ int main()
 		int numConf;
 		cout << "\nHow many configuration do you want to insert?\n";
 		cin >> numConf;
-		insertRandomConfiguration(numConf);
+		fm.printConfs(getRandomConfiguration(numConf));
 		break;
 
 	case 3:

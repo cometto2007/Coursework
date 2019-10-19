@@ -154,6 +154,7 @@
     <ClCompile Include="Arch.cpp" />
     <ClCompile Include="Configuration.cpp" />
     <ClCompile Include="coursework1.cpp" />
+    <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="Graph.cpp" />
     <ClCompile Include="PuzzleUtility.cpp" />
     <ClCompile Include="Test.cpp" />
@@ -162,6 +163,7 @@
   <ItemGroup>
     <ClInclude Include="Arch.h" />
     <ClInclude Include="Configuration.h" />
+    <ClInclude Include="FileManager.h" />
     <ClInclude Include="Graph.h" />
     <ClInclude Include="PuzzleUtility.h" />
     <ClInclude Include="UserInterface.h" />
