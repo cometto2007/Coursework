@@ -1,111 +1,86 @@
 #include <iostream>
-#include <stack>
-#include <string>
-#include <algorithm>
-#include "Configuration.h"
-#include "Graph.h"
+#include <sstream>
+#include <set>
+#include "UserInterface.h"
+#include "PuzzleUtility.h"
 
 using namespace std;
 
-int boardSize = 3;
-int i = 0;
+int getTask() {
+	int choice = 0;
 
-struct Move {
-	int coord;
-	int voidTile;
-	vector<int> conf;
-};
+	UserInterface::printMainMenu();
+	cin >> choice;
 
-bool confExist(int conf, vector<int>& confs) {
-	for (int c : confs) {
-		if (c == conf) {
-			return true;
-		}
+	while (choice < 1 || choice > 3) {
+		UserInterface::printWrongInputError();
+		cin >> choice;
 	}
-	return false;
+
+	return choice;
 }
 
-bool removeConf(int conf, vector<int>& confs) {
-	for (rsize_t i = 0; i < confs.size(); i++) {
-		if (confs[i] == conf) {
-			confs.erase(confs.begin() + i);
-		}
-	}
-	return false;
-}
+void insertConfiguration() {
+	string numbers = "";
+	UserInterface::printInsertConfigurationSection();
 
-int getWholeNumber(vector<int> conf) {
+	cin.ignore();
+	cin.clear();
+	getline(cin, numbers);
 
-	string s = "";
-	for (int i = 0; i < conf.size(); i++) {
-		s += to_string(conf[i]);
-	}
-	
-	return stoi(s);
-}
+	if (PuzzleUtility::isComposedByNumber(numbers)) {
+		stringstream ss(numbers);
 
-void areThereDuplicates(vector<int> v) {
-	int dupl = 0;
-	sort(v.begin(), v.end());
-	for (int i = 0; i < v.size() - 1; i++) {
-		if (v[i] == v[i + 1]) {
-			dupl++;
-			i--;
-		}
-	}
-	cout << "duplicates are: " << dupl << "\n\n";
-}
+		set<int> set;
 
-void test(Configuration& conf) {
-	stack<Move> remMoves;
-	vector<int> confs;
-	Configuration* c;
-
-	int voidTile = conf.getVoidTile();
-	int* moves = conf.getAvailableMoves();
-
-	for (int i = 0; i < 4; i++) {
-		if (moves[i] != -1) {
-			Move m = { moves[i], voidTile, conf.getTable() };
-			remMoves.push(m);
-		}
-	}
-
-	while (!remMoves.empty()) {
-		Move m = remMoves.top();
-		remMoves.pop();
-
-		c = new Configuration(m.conf, boardSize);
-		c->swapTiles(m.voidTile, m.coord);
-
-		if (c->isFinal()) {
-			// Make something to count the data
-
-			//c->print();
-			//cout << "\n" << i << " final\n\n";
-			//i++;
-		}
-		else if (confExist(getWholeNumber(c->getTable()), confs)) {
-			removeConf(getWholeNumber(c->getTable()), confs);
-		} else {
-			confs.push_back(getWholeNumber(c->getTable()));
-			int* moves = c->getAvailableMoves();
-			int voidTile = c->getVoidTile();
-
-			for (int i = 0; i < 4; i++) {
-				if (moves[i] != -1) {
-					Move m = { moves[i], voidTile, c->getTable() };
-					remMoves.push(m);
-				}
+		for (int i = 0; ss >> i; ) {
+			if (i && i > 0 && i <= 20) {
+				set.insert(i);
 			}
 		}
-		delete c;
-		areThereDuplicates(confs);
+		if (set.size() != 15) {
+			UserInterface::printWrongInputError();
+		}
+	}
+	else {
+		UserInterface::printWrongInputError();
+	}
+}
+
+void insertRandomConfiguration(int num) {
+	UserInterface::printCreateRandomConfigurationSection();
+
+	for (int i = 0; i < num; i++) {
+		vector<int> v = PuzzleUtility::genRandConf(20);
+		for (int i : v) {
+			cout << i << " ";
+		}
+		cout << "\n\n";
 	}
 }
 
 int main()
 {
-	Configuration* conf = new Configuration(boardSize);
-	test(*conf);
+	int task = getTask();
+
+	switch (task) {
+	case 1:
+		insertConfiguration();
+		break;
+
+	case 2:
+		int numConf;
+		cout << "\nHow many configuration do you want to insert?\n";
+		cin >> numConf;
+		insertRandomConfiguration(numConf);
+		break;
+
+	case 3:
+		break;
+
+	default:
+		break;
+	}
+
+	return 0;
 }
