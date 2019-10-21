@@ -191,23 +191,8 @@ void test(Configuration& conf) {
 			// Make something to count the data
 
 			//c->print();
-			//cout << "\n" << i << " final\n\n";
-			//i++;
-			vector<int> v2;
-			v2.push_back(8);
-			v2.push_back(3);
-			v2.push_back(4);
-			v2.push_back(2);
-			v2.push_back(1);
-			v2.push_back(5);
-			v2.push_back(6);
-			v2.push_back(7);
-			v2.push_back(-1);
-
-			if (confrontTable(c->getTable(), v2)) {
-				cout << "\nThe configuration exist\n\n";
-				return;
-			}
+			cout << "\n" << i << " final\n\n";
+			i++;
 
 		}
 		else if (confExist(getWholeNumber(c->getTable()), confs)) {

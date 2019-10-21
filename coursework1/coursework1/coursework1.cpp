@@ -22,8 +22,9 @@ int getTask() {
 	return choice;
 }
 
-void insertConfiguration() {
+vector<vector<int>> UserConfiguration() {
 	string numbers = "";
+	vector<vector<int>> confs(0);
 	UserInterface::printInsertConfigurationSection();
 
 	cin.ignore();
@@ -42,45 +43,51 @@ void insertConfiguration() {
 		}
 		if (set.size() != 15) {
 			UserInterface::printWrongInputError();
+		} else {
+			vector<int> conf(set.begin(), set.end());
+			conf.push_back(0);
+			confs.push_back(conf);
 		}
-	}
-	else {
+	} else {
 		UserInterface::printWrongInputError();
 	}
-}
-
-vector<vector<int>> getRandomConfiguration(int num) {
-	vector<vector<int>> confs;
-	for (int i = 0; i < num; i++) {
-		confs.push_back(PuzzleUtility::genRandConf(20));
-	}
-
 	return confs;
 }
 
 int main()
 {
-	FileManager fm;
-	int task = getTask();
+	FileManager fm("15-File.txt", "Solution-File.txt");
+	vector<vector<int>> confs(0);
+	bool execute = true;
 
-	switch (task) {
-	case 1:
-		insertConfiguration();
-		break;
+	while (execute) {
+		int task = getTask();
 
-	case 2:
-		int numConf;
-		cout << "\nHow many configuration do you want to insert?\n";
-		cin >> numConf;
-		fm.printConfs(getRandomConfiguration(numConf));
-		break;
+		switch (task) {
+		case 1:
+			fm.printConfs(UserConfiguration(), ofstream::out);
+			break;
 
-	case 3:
-		break;
+		case 2:
+			int numConf;
+			cout << "\nHow many configuration do you want to insert?\n";
+			cin >> numConf;
+			fm.printConfs(PuzzleUtility::genRandConfs(numConf, 20), ofstream::out);
+			break;
 
-	default:
-		break;
+		case 3:
+			 confs = fm.getConfs(16);
+			 fm.printResults(confs, ofstream::out);
+			break;
+
+		default:
+			break;
+		}
+		cout << "\nDo you want to run the program again? (y/n)\n";
+		char answer;
+		cin >> answer;
+		answer == 'y' ? execute = true : execute = false;
 	}
-
+	
 	return 0;
 }

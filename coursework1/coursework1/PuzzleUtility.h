@@ -9,7 +9,8 @@ using namespace std;
 class PuzzleUtility
 {
 public:
-	static vector<int> genRandConf(int num);
+	static vector<vector<int>> genRandConfs(int numConf, int numNumbers);
 	static bool isComposedByNumber(string conf);
+	static string getResults(vector<int> conf);
 };
 
