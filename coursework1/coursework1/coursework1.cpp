@@ -4,90 +4,106 @@
 #include "UserInterface.h"
 #include "PuzzleUtility.h"
 #include "FileManager.h"
-
+#include "Configuration.h"
 
 using namespace std;
 
-int getTask() {
-	int choice = 0;
+void handleResultsDelivery(int task, FileManager& fm, int puzzleSize) {
+	int partial = UserInterface::getPartialNum();
+	string res;
 
-	UserInterface::printMainMenu();
-	cin >> choice;
-
-	while (choice < 1 || choice > 3) {
-		UserInterface::printWrongInputError();
-		cin >> choice;
-	}
-
-	return choice;
-}
-
-vector<vector<int>> UserConfiguration() {
-	string numbers = "";
-	vector<vector<int>> confs(0);
-	UserInterface::printInsertConfigurationSection();
-
-	cin.ignore();
-	cin.clear();
-	getline(cin, numbers);
-
-	if (PuzzleUtility::isComposedByNumber(numbers)) {
-		stringstream ss(numbers);
-
-		set<int> set;
-
-		for (int i = 0; ss >> i; ) {
-			if (i && i > 0 && i <= 20) {
-				set.insert(i);
-			}
+	switch (task) {
+	case 1:
+		res = PuzzleUtility::getResults(fm.getConfs(puzzleSize), partial);
+		if (UserInterface::printOnScreen()) {
+			cout << res;
 		}
-		if (set.size() != 15) {
-			UserInterface::printWrongInputError();
-		} else {
-			vector<int> conf(set.begin(), set.end());
-			conf.push_back(0);
-			confs.push_back(conf);
+		if (UserInterface::printOnFile()) {
+			fm.printResults(res, ofstream::out);
 		}
-	} else {
-		UserInterface::printWrongInputError();
+		break;
+	case 2:
+		res = PuzzleUtility::getExtendedResults(fm.getConfs(puzzleSize), partial);
+		if (UserInterface::printOnScreen()) {
+			cout << res;
+		}
+		if (UserInterface::printOnFile()) {
+			fm.printResults(res, ofstream::out);
+		}
+		break;
+	case 3:
+		break;
+	default:
+		break;
 	}
-	return confs;
 }
 
 int main()
 {
 	FileManager fm("15-File.txt", "Solution-File.txt");
+	int puzzleSize = UserInterface::choosePuzzleSize();
+
 	vector<vector<int>> confs(0);
 	bool execute = true;
 
 	while (execute) {
-		int task = getTask();
+		int task = UserInterface::getMainTask(puzzleSize);
 
 		switch (task) {
 		case 1:
-			fm.printConfs(UserConfiguration(), ofstream::out);
+			confs.push_back(UserInterface::getUserConfiguration(puzzleSize));
+			if (UserInterface::printOnFile()) {
+				fm.printConfs(confs, ofstream::out);
+			}
 			break;
 
 		case 2:
-			int numConf;
-			cout << "\nHow many configuration do you want to insert?\n";
-			cin >> numConf;
-			fm.printConfs(PuzzleUtility::genRandConfs(numConf, 20), ofstream::out);
+			confs = UserInterface::generateRandomConfs(puzzleSize);
+			if (UserInterface::printOnFile()) {
+				fm.printConfs(confs, ofstream::out);
+			}
 			break;
 
 		case 3:
-			 confs = fm.getConfs(16);
-			 fm.printResults(confs, ofstream::out);
+			handleResultsDelivery(UserInterface::getResultMenuTask(), fm, puzzleSize);
 			break;
 
 		default:
 			break;
 		}
-		cout << "\nDo you want to run the program again? (y/n)\n";
-		char answer;
-		cin >> answer;
-		answer == 'y' ? execute = true : execute = false;
+		execute = UserInterface::runProgAgain();
+		confs.clear();
 	}
 	
 	return 0;
 }
+
+/*int main() {
+	vector<int> v(0);
+	v.push_back(1);
+	v.push_back(2);
+	v.push_back(3);
+	v.push_back(4);
+	v.push_back(5);
+	v.push_back(6);
+	v.push_back(7);
+	v.push_back(8);
+	v.push_back(9);
+	v.push_back(10);
+	v.push_back(11);
+	v.push_back(12);
+	v.push_back(15);
+	v.push_back(14);
+	v.push_back(13);
+	v.push_back(0);
+
+	Configuration c(v);
+	c.print();
+	cout << c.getColumn(4) << "\n";
+	cout << c.getReverseColumn(4) << "\n";
+	cout << c.getRow(4) << "\n";
+	cout << c.getReverseRow(4) << "\n";
+
+	vector<Coord> v1 = c.getAvailableMoves();
+	return 0;
+}*/

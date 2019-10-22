@@ -1,112 +1,211 @@
 #include "Configuration.h"
 
-Configuration::Configuration(vector<int> nums, int size):
-	rowSize(size), totalSize(size * size)
+Configuration::Configuration(vector<vector<int>> nums, int size)
 {
-	table = vector<int>(totalSize);
-	for (int i = 0; i < totalSize; i++)
-	{
-			table[i] = nums[i];
+	table = nums;
+}
+
+Configuration::Configuration(vector<int> nums)
+{
+	int rowSize = (int)sqrt(nums.size());
+	for (rsize_t i = 0; i < rowSize; i++) {
+		table.push_back(vector<int>(0));
+		for (rsize_t j = 0; j < rowSize; j++) {
+			table[i].push_back(nums[rowSize * i + j]);
+		}
 	}
 }
 
-Configuration::Configuration(int size):
-	rowSize(size), totalSize(size * size)
-{
+Configuration::Configuration(int size) {
 	int num = 1;
-	table = vector<int>(0);
-	for (int i = 0; i < totalSize - 1; i++)
-	{
-		table.push_back(num);
-		num++;
+	for (int i = 0; i < size; i++) {
+		table.push_back(vector<int>(0));
+		for (int j = 0; j < size; j++) {
+			if (i == size - 1 && j == size - 1) {
+				table[i].push_back(0);
+			} else {
+				table[i].push_back(num);
+				num++;
+			}
+		}
 	}
-	table.push_back(-1);
 }
 
 Configuration::Configuration(const Configuration& src) :
-	rowSize(src.rowSize), totalSize(src.totalSize)
+	table(src.table) 
 {
-	table = vector<int>(src.totalSize);
-	for (int i = 0; i < src.totalSize; i++)
-	{
-		table[i] = src.table[i];
-	}
 }
 
 Configuration::~Configuration()
 {
+	// TODO: pretty useless
+	for (vector<int> v : table) {
+		v.clear();
+	}
 	table.clear();
 }
 
-vector<int> Configuration::getTable() const
+vector<vector<int>> Configuration::getTable() const
 {
 	return table;
 }
 
-void Configuration::setTable(vector<int> nums)
+void Configuration::setTable(vector<vector<int>> newTable)
 {
-	for (int i = 0; i < totalSize; i++)
-	{
-			table[i] = nums[i];
-	}
+	table = newTable;
 }
 
 bool Configuration::isFinal()
 {
-	return table[totalSize - 1] == -1;
+	return table[table.size() - 1].back() == 0;
 }
 
-int Configuration::getVoidTile()
+Coord Configuration::getVoidTile()
 {
-	for (int i = 0; i < totalSize; i++)
-	{
-		if (table[i] == -1) {
-			return i;
+	for (rsize_t i = 0; i < table.size(); i++) {
+		for (rsize_t j = 0; j < table.size(); j++) {
+			if (table[i][j] == 0) {
+				return {(int)i, (int)j};
+			}
 		}
 	}
-	return -1;
+	return { -1, -1 };
 }
 
-int* Configuration::getAvailableMoves()
+vector<Coord> Configuration::getAvailableMoves()
 {
-	int voidTile = getVoidTile();
-	int left, right, up, down;
-	int* moves = new int[4];
+	Coord voidTile = getVoidTile();
+	vector<Coord> moves(0);
 	
-	if (voidTile < rowSize) up = -1;
-	else up = voidTile - rowSize;
-
-	if (voidTile >= totalSize - rowSize) down = -1;
-	else down = voidTile + rowSize;
-
-	if (voidTile % rowSize == 0) left = -1;
-	else left = voidTile - 1;
-
-	if (voidTile % rowSize == rowSize - 1) right = -1;
-	else right = voidTile + 1;
-
-	moves[0] = left;
-	moves[1] = right;
-	moves[2] = up;
-	moves[3] = down;
+	if (voidTile.x - 1 >= 0) {
+		moves.push_back({ voidTile.x - 1, voidTile.y });
+	}
+	if (voidTile.x + 1 <= 3) {
+		moves.push_back({ voidTile.x + 1, voidTile.y });
+	}
+	if (voidTile.y + 1 <= 3) {
+		moves.push_back({ voidTile.x, voidTile.y + 1 });
+	}
+	if (voidTile.y - 1 >= 0) {
+		moves.push_back({ voidTile.x, voidTile.y - 1 });
+	}
 
 	return moves;
 }
 
-void Configuration::swapTiles(int index1, int index2)
+void Configuration::swapTiles(Coord c1, Coord c2)
 {
-	int temp = table[index1];
-	table[index1] = table[index2];
-	table[index2] = temp;
+	int temp = table[c1.x][c1.y];
+	table[c1.x][c1.y] = table[c2.x][c2.y];
+	table[c2.x][c2.y] = temp;
 }
 
 void Configuration::print()
 {
-	for (int i = 0; i < totalSize; i++) {
-		cout << table[i] << "\t";
-		if ((i + 1) >= rowSize && (i + 1) % rowSize == 0) {
-			cout << "\n\n";
+	for (vector<int> v : table) { 
+		for (int n : v) {
+			if (n == 0) {
+				cout << "\t";
+			} else {
+				cout << n << "\t";
+			}
+		}
+		cout << "\n";
+	}
+	cout << "\n\n";
+}
+
+int Configuration::getRow(int partial)
+{
+	int count = 0;
+	for (vector<int> v : table) {
+		for (int i = 0; i + partial - 1 < v.size(); i++) {
+			if (isContinuous(vector<int>(v.begin() + i, v.begin() + i + partial))) {
+				count++;
+			}
 		}
 	}
-	cout << "\n\n\n";
+	return count;
+}
+
+bool Configuration::isContinuous(vector<int> v) {
+	int prec = v[0];
+	for (rsize_t i = 0; i < v.size(); i++) {
+		if (v[i] != prec + 1 && v[i] != prec) {
+			return false;
+		}
+		prec = v[i];
+	}
+	return true;
+}
+
+bool Configuration::isReverseContinuous(vector<int> v) {
+	int prec = v[0];
+	for (rsize_t i = 0; i < v.size(); i++) {
+		if (v[i] != prec - 1 && v[i] != prec) {
+			return false;
+		}
+		prec = v[i];
+	}
+	return true;
+}
+
+int Configuration::getColumn(int partial)
+{
+	vector<int> v;
+	int count = 0;
+	for (rsize_t i = 0; i < table.size(); i++) {
+		for (rsize_t j = 0; j < table.size(); j++) {
+			v.push_back(table[j][i]);
+		}
+		for (int i = 0; i + partial - 1 < v.size(); i++) {
+			if (isContinuous(vector<int>(v.begin() + i, v.begin() + i + partial))) {
+				count++;
+			}
+		}
+		v.clear();
+	}
+	return count;
+}
+
+int Configuration::getReverseRow(int partial)
+{
+	int count = 0;
+	for (vector<int> v : table) {
+		for (int i = 0; i + partial - 1 < v.size(); i++) {
+			if (isReverseContinuous(vector<int>(v.begin() + i, v.begin() + i + partial))) {
+				count++;
+			}
+		}
+	}
+	return count;
+}
+
+int Configuration::getReverseColumn(int partial)
+{
+	vector<int> v;
+	int count = 0;
+	for (rsize_t i = 0; i < table.size(); i++) {
+		for (rsize_t j = 0; j < table.size(); j++) {
+			v.push_back(table[j][i]);
+		}
+		for (int i = 0; i + partial - 1 < v.size(); i++) {
+			if (isReverseContinuous(vector<int>(v.begin() + i, v.begin() + i + partial))) {
+				count++;
+			}
+		}
+		v.clear();
+	}
+	return count;
+}
+
+vector<vector<int>> Configuration::convertVectorToTable(vector<int> nums) {
+	vector<vector<int>> conf;
+	for (rsize_t i = 0; i < nums.size(); i++) {
+		conf.push_back(vector<int>(0));
+		for (rsize_t j = 0; j < nums.size(); j++) {
+			conf[i].push_back(nums[i + j]);
+		}
+	}
+	return conf;
 }
