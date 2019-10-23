@@ -153,14 +153,18 @@
   <ItemGroup>
     <ClCompile Include="Configuration.cpp" />
     <ClCompile Include="coursework1.cpp" />
+    <ClCompile Include="ExtendedResults.cpp" />
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="PuzzleUtility.cpp" />
+    <ClCompile Include="Results.cpp" />
     <ClCompile Include="UserInterface.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Configuration.h" />
+    <ClInclude Include="ExtendedResults.h" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="PuzzleUtility.h" />
+    <ClInclude Include="Results.h" />
     <ClInclude Include="UserInterface.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

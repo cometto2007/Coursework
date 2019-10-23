@@ -7,7 +7,7 @@ Configuration::Configuration(vector<vector<int>> nums, int size)
 
 Configuration::Configuration(vector<int> nums)
 {
-	int rowSize = (int)sqrt(nums.size());
+	unsigned int rowSize = (int)sqrt(nums.size());
 	for (rsize_t i = 0; i < rowSize; i++) {
 		table.push_back(vector<int>(0));
 		for (rsize_t j = 0; j < rowSize; j++) {
@@ -48,6 +48,16 @@ Configuration::~Configuration()
 vector<vector<int>> Configuration::getTable() const
 {
 	return table;
+}
+
+vector<int> Configuration::getTableAsVector() const {
+	vector<int> res;
+	for (vector<int> v : table) {
+		for (int n : v) {
+			res.push_back(n);
+		}
+	}
+	return res;
 }
 
 void Configuration::setTable(vector<vector<int>> newTable)
@@ -100,26 +110,28 @@ void Configuration::swapTiles(Coord c1, Coord c2)
 	table[c2.x][c2.y] = temp;
 }
 
-void Configuration::print()
+string Configuration::toString()
 {
+	string out = "";
 	for (vector<int> v : table) { 
 		for (int n : v) {
 			if (n == 0) {
-				cout << "\t";
+				out += "\t";
 			} else {
-				cout << n << "\t";
+				out += to_string(n) += "\t";
 			}
 		}
-		cout << "\n";
+		out += "\n";
 	}
-	cout << "\n\n";
+	out += "\n\n";
+	return out;
 }
 
 int Configuration::getRow(int partial)
 {
 	int count = 0;
 	for (vector<int> v : table) {
-		for (int i = 0; i + partial - 1 < v.size(); i++) {
+		for (rsize_t i = 0; i + partial - 1 < v.size(); i++) {
 			if (isContinuous(vector<int>(v.begin() + i, v.begin() + i + partial))) {
 				count++;
 			}
@@ -158,7 +170,7 @@ int Configuration::getColumn(int partial)
 		for (rsize_t j = 0; j < table.size(); j++) {
 			v.push_back(table[j][i]);
 		}
-		for (int i = 0; i + partial - 1 < v.size(); i++) {
+		for (rsize_t i = 0; i + partial - 1 < v.size(); i++) {
 			if (isContinuous(vector<int>(v.begin() + i, v.begin() + i + partial))) {
 				count++;
 			}
@@ -172,7 +184,7 @@ int Configuration::getReverseRow(int partial)
 {
 	int count = 0;
 	for (vector<int> v : table) {
-		for (int i = 0; i + partial - 1 < v.size(); i++) {
+		for (rsize_t i = 0; i + partial - 1 < v.size(); i++) {
 			if (isReverseContinuous(vector<int>(v.begin() + i, v.begin() + i + partial))) {
 				count++;
 			}
@@ -189,12 +201,25 @@ int Configuration::getReverseColumn(int partial)
 		for (rsize_t j = 0; j < table.size(); j++) {
 			v.push_back(table[j][i]);
 		}
-		for (int i = 0; i + partial - 1 < v.size(); i++) {
+		for (rsize_t i = 0; i + partial - 1 < v.size(); i++) {
 			if (isReverseContinuous(vector<int>(v.begin() + i, v.begin() + i + partial))) {
 				count++;
 			}
 		}
 		v.clear();
+	}
+	return count;
+}
+
+int Configuration::getContinuousOccurrence(int partial) {
+	vector<int> v = getTableAsVector();
+	sort(v.begin(), v.end());
+	int count = 0;
+
+	for (rsize_t i = 1;  i + partial - 1 < v.size(); i++) {
+		if (isContinuous(vector<int>(v.begin() + i, v.begin() + i + partial))) {
+			count++;
+		}
 	}
 	return count;
 }

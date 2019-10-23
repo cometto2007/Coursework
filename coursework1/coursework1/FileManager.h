@@ -10,12 +10,11 @@ using namespace std;
 class FileManager
 {
 public:
-	FileManager(string puzzles, string confs);
-	void printConfs(vector<vector<int>> confs, unsigned int mode);
-	void printResults(string res, unsigned int mode);
-	vector<vector<int>> getConfs(int puzzleSize);
-private:	
-	string puzzlesFile;
-	string solFile;
+	static FileManager* getInstance();
+	void printConfs(vector<vector<int>> confs, string fileName, unsigned int mode);
+	void printResults(string res, string fileName, unsigned int mode);
+	vector<vector<int>> getConfs(int puzzleSize, string fileName);
+private:
+	FileManager();
 };
 

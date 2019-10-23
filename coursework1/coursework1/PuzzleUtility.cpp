@@ -1,23 +1,36 @@
 #include "PuzzleUtility.h"
+#include <random>
+#include <chrono>
+#include <algorithm>
+#include <thread>
 
 vector<vector<int>> PuzzleUtility::genRandConfs(int numConf, int puzzleSize)
 {
-	vector<vector<int>> confs;
+	vector<vector<int>> confs(numConf);
+	vector<thread> threads(numConf);
+
+	for (int i = 0; i < numConf; i++) {
+		threads[i] = thread(genRandConf, i, ref(confs), puzzleSize);
+	}
+	for (int i = 0; i < numConf; i++) {
+		threads[i].join();
+	}
+	
+	return confs;
+}
+
+void PuzzleUtility::genRandConf(int i, vector<vector<int>>& confs, int puzzleSize) {
+	time_t  seed = chrono::system_clock::now().time_since_epoch().count();
+	std::default_random_engine e((unsigned int)seed);
+
 	vector<int> conf(0);
 	for (int i = 1; i <= (puzzleSize + 5); i++) {
 		conf.push_back(i);
 	}
-
-	for (int i = 0; i < numConf; i++) {
-		random_shuffle(conf.begin(), conf.end());
-		conf = vector<int>(conf.begin(), conf.begin() + puzzleSize);
-		conf.push_back(0);
-
-		confs.push_back(conf);
-		conf.pop_back();
-	}
-	
-	return confs;
+	shuffle(conf.begin(), conf.end(), e);
+	conf = vector<int>(conf.begin(), conf.begin() + puzzleSize);
+	conf.push_back(0);
+	confs[i] = conf;
 }
 
 bool PuzzleUtility::isComposedByNumber(string conf)
@@ -29,50 +42,33 @@ bool PuzzleUtility::isComposedByNumber(string conf)
 	return !conf.empty() && it == conf.end();
 }
 
-string PuzzleUtility::getResult(vector<int> conf, int partial)
-{
-	string res = "";
-
-	Configuration c(conf);
-	res += "row = " + to_string(c.getRow(partial)) + "\n";
-	res += "column = " + to_string(c.getColumn(partial)) + "\n";
-	res += "reverse row = " + to_string(c.getReverseRow(partial)) + "\n";
-	res += "reverse column = " + to_string(c.getReverseColumn(partial)) + "\n";
-	return res;
-}
-
-string PuzzleUtility::getExtendedResults(vector<vector<int>> confs, int partial) {
+string PuzzleUtility::getExtendedResults(vector<vector<int>> confs, int partial, bool includeVoid) {
 	string out = "";
+
 	out += to_string(confs.size()) + "\n";
 	for (vector<int> conf : confs) {
-		out += PuzzleUtility::printConf(conf);
-		out += PuzzleUtility::getResult(conf, partial);
-		out += PuzzleUtility::getTotalRowsColumnsRes(conf, partial);
+		Configuration c(conf);
+		ExtendedResults r(c, partial);
+		out += r.getReachConfResults(includeVoid);
 		out += "\n\n";
 	}
 	return out;
 }
 
-string PuzzleUtility::getTotalRowsColumnsRes(vector<int> conf, int partial) {
-	Configuration c(conf);
-
-	string out = "(total for row & column, including reverse, in this configuration)\n";
-	for (int i = 2; i <= partial; i++) {
-		int total = c.getRow(i);
-		total += c.getColumn(i);
-		total += c.getReverseRow(i);
-		total += c.getReverseColumn(i);
-		out += to_string(i) + " = " + to_string(total) + "\n";
-	}
-	return out;
-}
-
-string PuzzleUtility::getResults(vector<vector<int>> confs, int partial) {
+string PuzzleUtility::getResults(vector<vector<int>> confs, int partial, bool confsReach, bool includeVoid) {
 	string out = "";
 	out += to_string(confs.size()) + "\n";
 	for (vector<int> conf : confs) {
-		out += PuzzleUtility::printConf(conf);
-		out += PuzzleUtility::getResult(conf, partial);
+		Configuration c(conf);
+		Results r(c);
+		out += c.toString();
+		
+		if (confsReach) {
+			out += r.getReachConfResults(includeVoid);
+		} else {
+			out += r.getConfResults();
+		}
+		
 		out += "\n\n";
 	}
 	return out;
@@ -80,6 +76,7 @@ string PuzzleUtility::getResults(vector<vector<int>> confs, int partial) {
 
 string PuzzleUtility::printConfs(vector<vector<int>> confs) {
 	string out = "";
+	out += to_string(confs.size()) + "\n";
 	for (vector<int> conf : confs) {
 		out += printConf(conf);
 		out += "\n\n";

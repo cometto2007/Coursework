@@ -51,9 +51,7 @@ vector<int> UserInterface::getUserConfiguration(int puzzleSize)
 			cout << "\nYou put invalid character, retry\n";
 		}
 	}
-	if (printOnScreen()) {
-		cout << PuzzleUtility::printConf(conf);
-	}
+	printOnScreen(PuzzleUtility::printConf(conf));
 	return conf;
 }
 
@@ -63,9 +61,7 @@ vector<vector<int>> UserInterface::generateRandomConfs(int puzzleSize) {
 	cin >> numConf;
 
 	vector<vector<int>> confs = PuzzleUtility::genRandConfs(numConf, puzzleSize);
-	if (printOnScreen()) {
-		cout << "\n\n" << PuzzleUtility::printConfs(confs);
-	}
+	printOnScreen(PuzzleUtility::printConfs(confs));
 
 	return confs;
 }
@@ -98,18 +94,64 @@ int UserInterface::getPartialNum() {
 	return choice;
 }
 
-bool UserInterface::printOnScreen() {
+bool UserInterface::getIncludeVoid() {
+	char choice;
+	cout << "\nDo you want include the row with the void tile in the calculations? (y/n)\n";
+
+	cin >> choice;
+	while (choice != 'y' && choice != 'n') {
+		cout << "\nYou put an invalid input, you have to put 'y' or 'n', retry\n";
+		cin >> choice;
+	}
+	return choice == 'y';
+}
+
+void UserInterface::printOnScreen(string res) {
 	cout << "\nDo you want to print results on screen? (y/n)\n";
 	char answer;
 	cin >> answer;
-	return answer == 'y';
+	if (answer == 'y') {
+		cout << res;
+	}
 }
 
-bool UserInterface::printOnFile() {
+void UserInterface::printOnFile(FileManager* fm, string res) {
+	bool error = true;
 	cout << "\nDo you want to print results on file? (y/n)\n";
 	char answer;
 	cin >> answer;
-	return answer == 'y';
+	if (answer == 'y') {
+		string fileName;
+		cout << "Insert the name of the file\n";
+		cin >> fileName;
+
+		while (error) {
+			try {
+				fm->printResults(res, fileName, ofstream::out);
+				error = false;
+			} catch (const invalid_argument & iae) {
+				cout << " unable print data: " << iae.what() << ", retry\n";
+			}
+		}
+	}
+}
+
+vector<vector<int>> UserInterface::getConfsFromFile(FileManager* fm, int puzzleSize) {
+	vector<vector<int>> res;
+	bool error = true;
+	string fileName;
+	cout << "Insert the name of the file\n";
+	cin >> fileName;
+
+	while (error) {
+		try {
+			res = fm->getConfs(puzzleSize,fileName);
+			error = false;
+		} catch (const invalid_argument & iae) {
+			cout << " unable print data: " << iae.what() << ", retry\n";
+		}
+	}
+	return res;
 }
 
 bool UserInterface::runProgAgain() {
