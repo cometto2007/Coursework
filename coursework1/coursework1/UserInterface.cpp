@@ -132,7 +132,7 @@ void UserInterface::printOnScreen(string res) {
 	}
 }
 
-void UserInterface::printOnFile(FileManager* fm, string res) {
+void UserInterface::printOnFile(FileManager* fm, string res) throw (invalid_argument) {
 	bool error = true;
 	cout << "\nDo you want to print results on file? (y/n)\n";
 
@@ -158,7 +158,7 @@ void UserInterface::printOnFile(FileManager* fm, string res) {
 	}
 }
 
-vector<vector<int>> UserInterface::getConfsFromFile(FileManager* fm, int puzzleSize) {
+vector<vector<int>> UserInterface::getConfsFromFile(FileManager* fm, int puzzleSize) throw (invalid_argument) {
 	vector<vector<int>> res;
 	bool error = true;
 	string fileName;
@@ -171,7 +171,11 @@ vector<vector<int>> UserInterface::getConfsFromFile(FileManager* fm, int puzzleS
 		if (isValidFileName(fileName)) {
 			try {
 				res = fm->getConfs(puzzleSize, fileName + ".txt");
-				error = false;
+				if (!validateConf(res)) {
+					cout << "\nFile has invalid Configuration, please insert another one\n";
+				} else {
+					error = false;
+				}
 			} catch (const invalid_argument & iae) {
 				cout << "\nunable read data: " << iae.what() << ", retry\n";
 			}
@@ -233,4 +237,14 @@ bool UserInterface::isValidFileName(string fileName) {
 		fileName.find('|') != string::npos ||
 		fileName.find('"') != string::npos;
 	return !foundInvalidChar;
+}
+
+bool UserInterface::validateConf(vector<vector<int>>& confs) {
+	for (vector<int> c : confs) {
+		Configuration conf(c);
+		if (!conf.isValid()) {
+			return false;
+		}
+	}
+	return true;
 }

@@ -14,10 +14,10 @@ string Results::getConfResults(bool includeVoid) {
 	return res;
 }
 
-string Results::getReachConfResults(bool includeVoid) {
+string Results::getReachConfResults() {
 	string res = "";
 	int partial = conf.getTable().size();
-	unsigned long long n = solutionFormula(partial, includeVoid);
+	unsigned long long n = solutionFormula();
 
 	res += "row = " + to_string(n) + "\n";
 	res += "column = " + to_string(n) + "\n";
@@ -26,20 +26,23 @@ string Results::getReachConfResults(bool includeVoid) {
 	return res;
 }
 
-unsigned long long Results::solutionFormula(int partial, bool includeVoid) {
+unsigned long long Results::solutionFormula() {
+	int rowSize = conf.getTable().size();
+	unsigned long long res = partialSolutionFormula(rowSize);
+
+	int contOccurr = conf.getContinuousOccurrence(rowSize - 1);
+	res += (factorial(rowSize * rowSize - rowSize) / 2)* contOccurr;
+	return res;
+}
+
+unsigned long long Results::partialSolutionFormula(int partial) {
 	int rowSize = conf.getTable().size();
 	int pos = rowSize * rowSize - 1 - partial;
 	Configuration c(rowSize);
-	int freq = c.getRow(partial, includeVoid);
+	int freq = c.getRow(partial);
 	int contOccurr = conf.getContinuousOccurrence(partial);
 
-	unsigned long long res = freq * (factorial(pos) / 2) * contOccurr;
-	if (includeVoid) {
-		contOccurr = conf.getContinuousOccurrence(partial - 1);
-		res += (factorial(pos + 1) / 2)* contOccurr;
-	}
-	return res;
-	
+	return freq * (factorial(pos) / 2) * contOccurr;
 }
 
 unsigned long long Results::factorial(int n) {

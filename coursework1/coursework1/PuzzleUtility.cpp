@@ -42,14 +42,14 @@ bool PuzzleUtility::isComposedByNumber(string conf)
 	return !conf.empty() && it == conf.end();
 }
 
-string PuzzleUtility::getExtendedResults(vector<vector<int>> confs, int partial, bool includeVoid) {
+string PuzzleUtility::getExtendedResults(vector<vector<int>> confs, int partial) {
 	string out = "";
 
 	out += to_string(confs.size()) + "\n";
 	for (vector<int> conf : confs) {
 		Configuration c(conf);
 		ExtendedResults r(c, partial);
-		out += r.getReachConfResults(includeVoid);
+		out += r.getReachConfResults();
 		out += "\n\n";
 	}
 	return out;
@@ -64,7 +64,7 @@ string PuzzleUtility::getResults(vector<vector<int>> confs, int partial, bool co
 		out += c.toString();
 		
 		if (confsReach) {
-			out += r.getReachConfResults(includeVoid);
+			out += r.getReachConfResults();
 		} else {
 			out += r.getConfResults(includeVoid);
 		}

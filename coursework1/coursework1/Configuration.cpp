@@ -38,7 +38,6 @@ Configuration::Configuration(const Configuration& src) :
 
 Configuration::~Configuration()
 {
-	// TODO: pretty useless
 	for (vector<int> v : table) {
 		v.clear();
 	}
@@ -126,12 +125,12 @@ string Configuration::toString()
 	return out;
 }
 
-int Configuration::getRow(int partial, bool includeVoid)
+int Configuration::getRow(int partial, bool voidTile)
 {
 	int count = 0;
 	for (vector<int> v : table) {
 		for (rsize_t i = 0; i + partial - 1 < v.size(); i++) {
-			if (isContinuous(vector<int>(v.begin() + i, v.begin() + i + partial), includeVoid), includeVoid) {
+			if (isContinuous(vector<int>(v.begin() + i, v.begin() + i + partial), voidTile)) {
 				count++;
 			}
 		}
@@ -139,10 +138,10 @@ int Configuration::getRow(int partial, bool includeVoid)
 	return count;
 }
 
-bool Configuration::isContinuous(vector<int> v, bool includeVoid) {
+bool Configuration::isContinuous(vector<int> v, bool voidTile) {
 	int prec = v[0];
 	for (rsize_t i = 0; i < v.size(); i++) {
-		if (i == v.size() - 1 && includeVoid && v[i] == 0) {
+		if (v[i] == 0 && i == v.size() - 1 && voidTile) {
 			return true;
 		}
 		if (v[i] != prec + 1 && v[i] != prec) {
@@ -153,10 +152,10 @@ bool Configuration::isContinuous(vector<int> v, bool includeVoid) {
 	return true;
 }
 
-bool Configuration::isReverseContinuous(vector<int> v, bool includeVoid) {
+bool Configuration::isReverseContinuous(vector<int> v, bool voidTile) {
 	int prec = v[0];
 	for (rsize_t i = 0; i < v.size(); i++) {
-		if (i == v.size() - 1 && includeVoid && v[i] == 0) {
+		if (v[i] == 0 && i == v.size() - 1 && voidTile) {
 			return true;
 		}
 		if (v[i] != prec - 1 && v[i] != prec) {
@@ -167,7 +166,7 @@ bool Configuration::isReverseContinuous(vector<int> v, bool includeVoid) {
 	return true;
 }
 
-int Configuration::getColumn(int partial, bool includeVoid)
+int Configuration::getColumn(int partial, bool voidTile)
 {
 	vector<int> v;
 	int count = 0;
@@ -176,7 +175,7 @@ int Configuration::getColumn(int partial, bool includeVoid)
 			v.push_back(table[j][i]);
 		}
 		for (rsize_t i = 0; i + partial - 1 < v.size(); i++) {
-			if (isContinuous(vector<int>(v.begin() + i, v.begin() + i + partial), includeVoid)) {
+			if (isContinuous(vector<int>(v.begin() + i, v.begin() + i + partial), voidTile)) {
 				count++;
 			}
 		}
@@ -185,12 +184,12 @@ int Configuration::getColumn(int partial, bool includeVoid)
 	return count;
 }
 
-int Configuration::getReverseRow(int partial, bool includeVoid)
+int Configuration::getReverseRow(int partial, bool voidTile)
 {
 	int count = 0;
 	for (vector<int> v : table) {
 		for (rsize_t i = 0; i + partial - 1 < v.size(); i++) {
-			if (isReverseContinuous(vector<int>(v.begin() + i, v.begin() + i + partial), includeVoid)) {
+			if (isReverseContinuous(vector<int>(v.begin() + i, v.begin() + i + partial), voidTile)) {
 				count++;
 			}
 		}
@@ -198,7 +197,7 @@ int Configuration::getReverseRow(int partial, bool includeVoid)
 	return count;
 }
 
-int Configuration::getReverseColumn(int partial, bool includeVoid)
+int Configuration::getReverseColumn(int partial, bool voidTile)
 {
 	vector<int> v;
 	int count = 0;
@@ -207,7 +206,7 @@ int Configuration::getReverseColumn(int partial, bool includeVoid)
 			v.push_back(table[j][i]);
 		}
 		for (rsize_t i = 0; i + partial - 1 < v.size(); i++) {
-			if (isReverseContinuous(vector<int>(v.begin() + i, v.begin() + i + partial), includeVoid)) {
+			if (isReverseContinuous(vector<int>(v.begin() + i, v.begin() + i + partial), voidTile)) {
 				count++;
 			}
 		}
@@ -222,11 +221,24 @@ int Configuration::getContinuousOccurrence(int partial) {
 	int count = 0;
 
 	for (rsize_t i = 1;  i + partial - 1 < v.size(); i++) {
-		if (isContinuous(vector<int>(v.begin() + i, v.begin() + i + partial), false)) {
+		if (isContinuous(vector<int>(v.begin() + i, v.begin() + i + partial))) {
 			count++;
 		}
 	}
 	return count;
+}
+
+bool Configuration::isValid() {
+	set<int> set;
+	for (vector<int> v : table) {
+		for (int n : v) {
+			set.insert(n);
+		}
+	}
+	if (set.size() != table.size() * table.size()) {
+		return false;
+	}
+	return true;
 }
 
 vector<vector<int>> Configuration::convertVectorToTable(vector<int> nums) {
