@@ -167,6 +167,9 @@
     <ClInclude Include="Results.h" />
     <ClInclude Include="UserInterface.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="H:\Desktop\res.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

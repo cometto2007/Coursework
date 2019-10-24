@@ -66,7 +66,7 @@ string PuzzleUtility::getResults(vector<vector<int>> confs, int partial, bool co
 		if (confsReach) {
 			out += r.getReachConfResults(includeVoid);
 		} else {
-			out += r.getConfResults();
+			out += r.getConfResults(includeVoid);
 		}
 		
 		out += "\n\n";

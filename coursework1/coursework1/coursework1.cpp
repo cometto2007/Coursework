@@ -6,29 +6,28 @@
 #include "FileManager.h"
 #include "Configuration.h"
 
-# include <thread>
-# include <mutex>
-
 using namespace std;
 
 void handleResultsDelivery(int task, FileManager* const fm, int puzzleSize) {
-	int partial = UserInterface::getPartialNum();
+	int partial = (int)sqrt(puzzleSize + 1);
+	vector<vector<int>> confs = UserInterface::getConfsFromFile(fm, puzzleSize);
 	bool includeVoid = UserInterface::getIncludeVoid();
 	string res;
 
 	switch (task) {
 	case 1:
-		res = PuzzleUtility::getResults(UserInterface::getConfsFromFile(fm, puzzleSize), partial, false, includeVoid);
+		res = PuzzleUtility::getResults(confs, partial, false, includeVoid);
 		UserInterface::printOnScreen(res);
 		UserInterface::printOnFile(fm, res);
 		break;
 	case 2:
-		res = PuzzleUtility::getResults(UserInterface::getConfsFromFile(fm, puzzleSize), partial, true, includeVoid);
+		partial = UserInterface::getPartialNum();
+		res = PuzzleUtility::getResults(confs, partial, true, includeVoid);
 		UserInterface::printOnScreen(res);
 		UserInterface::printOnFile(fm, res);
 		break;
 	case 3:
-		res = PuzzleUtility::getExtendedResults(UserInterface::getConfsFromFile(fm, puzzleSize), partial, includeVoid);
+		res = PuzzleUtility::getExtendedResults(confs, partial, includeVoid);
 		UserInterface::printOnScreen(res);
 		UserInterface::printOnFile(fm, res);
 		break;

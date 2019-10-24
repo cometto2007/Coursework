@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include <set>
+#include <regex> 
 #include "PuzzleUtility.h"
 #include "Configuration.h"
 #include "FileManager.h"
@@ -22,4 +23,7 @@ public:
 	static int choosePuzzleSize();
 	static int getPartialNum();
 	static bool getIncludeVoid();
+private:
+	static bool checkForYNInput();
+	static bool isValidFileName(string fileName);
 };

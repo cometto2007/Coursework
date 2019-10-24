@@ -123,16 +123,15 @@ string Configuration::toString()
 		}
 		out += "\n";
 	}
-	out += "\n\n";
 	return out;
 }
 
-int Configuration::getRow(int partial)
+int Configuration::getRow(int partial, bool includeVoid)
 {
 	int count = 0;
 	for (vector<int> v : table) {
 		for (rsize_t i = 0; i + partial - 1 < v.size(); i++) {
-			if (isContinuous(vector<int>(v.begin() + i, v.begin() + i + partial))) {
+			if (isContinuous(vector<int>(v.begin() + i, v.begin() + i + partial), includeVoid), includeVoid) {
 				count++;
 			}
 		}
@@ -140,9 +139,12 @@ int Configuration::getRow(int partial)
 	return count;
 }
 
-bool Configuration::isContinuous(vector<int> v) {
+bool Configuration::isContinuous(vector<int> v, bool includeVoid) {
 	int prec = v[0];
 	for (rsize_t i = 0; i < v.size(); i++) {
+		if (i == v.size() - 1 && includeVoid && v[i] == 0) {
+			return true;
+		}
 		if (v[i] != prec + 1 && v[i] != prec) {
 			return false;
 		}
@@ -151,9 +153,12 @@ bool Configuration::isContinuous(vector<int> v) {
 	return true;
 }
 
-bool Configuration::isReverseContinuous(vector<int> v) {
+bool Configuration::isReverseContinuous(vector<int> v, bool includeVoid) {
 	int prec = v[0];
 	for (rsize_t i = 0; i < v.size(); i++) {
+		if (i == v.size() - 1 && includeVoid && v[i] == 0) {
+			return true;
+		}
 		if (v[i] != prec - 1 && v[i] != prec) {
 			return false;
 		}
@@ -162,7 +167,7 @@ bool Configuration::isReverseContinuous(vector<int> v) {
 	return true;
 }
 
-int Configuration::getColumn(int partial)
+int Configuration::getColumn(int partial, bool includeVoid)
 {
 	vector<int> v;
 	int count = 0;
@@ -171,7 +176,7 @@ int Configuration::getColumn(int partial)
 			v.push_back(table[j][i]);
 		}
 		for (rsize_t i = 0; i + partial - 1 < v.size(); i++) {
-			if (isContinuous(vector<int>(v.begin() + i, v.begin() + i + partial))) {
+			if (isContinuous(vector<int>(v.begin() + i, v.begin() + i + partial), includeVoid)) {
 				count++;
 			}
 		}
@@ -180,12 +185,12 @@ int Configuration::getColumn(int partial)
 	return count;
 }
 
-int Configuration::getReverseRow(int partial)
+int Configuration::getReverseRow(int partial, bool includeVoid)
 {
 	int count = 0;
 	for (vector<int> v : table) {
 		for (rsize_t i = 0; i + partial - 1 < v.size(); i++) {
-			if (isReverseContinuous(vector<int>(v.begin() + i, v.begin() + i + partial))) {
+			if (isReverseContinuous(vector<int>(v.begin() + i, v.begin() + i + partial), includeVoid)) {
 				count++;
 			}
 		}
@@ -193,7 +198,7 @@ int Configuration::getReverseRow(int partial)
 	return count;
 }
 
-int Configuration::getReverseColumn(int partial)
+int Configuration::getReverseColumn(int partial, bool includeVoid)
 {
 	vector<int> v;
 	int count = 0;
@@ -202,7 +207,7 @@ int Configuration::getReverseColumn(int partial)
 			v.push_back(table[j][i]);
 		}
 		for (rsize_t i = 0; i + partial - 1 < v.size(); i++) {
-			if (isReverseContinuous(vector<int>(v.begin() + i, v.begin() + i + partial))) {
+			if (isReverseContinuous(vector<int>(v.begin() + i, v.begin() + i + partial), includeVoid)) {
 				count++;
 			}
 		}
@@ -217,7 +222,7 @@ int Configuration::getContinuousOccurrence(int partial) {
 	int count = 0;
 
 	for (rsize_t i = 1;  i + partial - 1 < v.size(); i++) {
-		if (isContinuous(vector<int>(v.begin() + i, v.begin() + i + partial))) {
+		if (isContinuous(vector<int>(v.begin() + i, v.begin() + i + partial), false)) {
 			count++;
 		}
 	}
