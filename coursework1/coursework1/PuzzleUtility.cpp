@@ -6,31 +6,53 @@
 
 vector<vector<int>> PuzzleUtility::genRandConfs(int numConf, int puzzleSize)
 {
-	vector<vector<int>> confs(numConf);
-	vector<thread> threads(numConf);
+	int numtask1, numtask2;
+	if (numConf % 2 == 0) {
+		numtask1 = numtask2 = numConf / 2;
+	} else {
+		numtask1 = numConf / 2;
+		numtask2 = numConf / 2 + 1;
+	}
+	vector<vector<int>> confs1(numtask1);
+	vector<vector<int>> confs2(numtask2);
+	thread t1 = thread(genRandConf, ref(confs1), puzzleSize);
+	thread t2 = thread(genRandConf, ref(confs2), puzzleSize);
 
-	for (int i = 0; i < numConf; i++) {
-		threads[i] = thread(genRandConf, i, ref(confs), puzzleSize);
-	}
-	for (int i = 0; i < numConf; i++) {
-		threads[i].join();
-	}
-	
+	t1.join();
+	t2.join();
+
+	vector<vector<int>> confs;
+	confs.reserve(confs1.size() + confs2.size());
+	confs.insert(confs.end(), confs1.begin(), confs1.end());
+	confs.insert(confs.end(), confs2.begin(), confs2.end());
+
 	return confs;
 }
 
-void PuzzleUtility::genRandConf(int i, vector<vector<int>>& confs, int puzzleSize) {
-	time_t  seed = chrono::system_clock::now().time_since_epoch().count();
-	std::default_random_engine e((unsigned int)seed);
+// Slower version without Threads
+/*vector<vector<int>> PuzzleUtility::genRandConfs(int numConf, int puzzleSize)
+{
+	vector<vector<int>> confs(numConf);
+	genRandConf(confs, puzzleSize);
+	
 
-	vector<int> conf(0);
-	for (int i = 1; i <= (puzzleSize + 5); i++) {
-		conf.push_back(i);
+	return confs;
+}*/
+
+void PuzzleUtility::genRandConf(vector<vector<int>>& confs, int puzzleSize) {
+	for (int i = 0; i < confs.size(); i++) {
+		time_t  seed = chrono::system_clock::now().time_since_epoch().count();
+		std::default_random_engine e((unsigned int)seed);
+
+		vector<int> conf(0);
+		for (int i = 1; i <= (puzzleSize + 5); i++) {
+			conf.push_back(i);
+		}
+		shuffle(conf.begin(), conf.end(), e);
+		conf = vector<int>(conf.begin(), conf.begin() + puzzleSize);
+		conf.push_back(0);
+		confs[i] = conf;
 	}
-	shuffle(conf.begin(), conf.end(), e);
-	conf = vector<int>(conf.begin(), conf.begin() + puzzleSize);
-	conf.push_back(0);
-	confs[i] = conf;
 }
 
 bool PuzzleUtility::isComposedByNumber(string conf)
@@ -49,7 +71,7 @@ string PuzzleUtility::getExtendedResults(vector<vector<int>> confs, int partial)
 	for (vector<int> conf : confs) {
 		Configuration c(conf);
 		ExtendedResults r(c, partial);
-		out += r.getReachConfResults();
+		out += r.getReachConfResults(partial);
 		out += "\n\n";
 	}
 	return out;
@@ -64,9 +86,9 @@ string PuzzleUtility::getResults(vector<vector<int>> confs, int partial, bool co
 		out += c.toString();
 		
 		if (confsReach) {
-			out += r.getReachConfResults();
+			out += r.getReachConfResults(partial);
 		} else {
-			out += r.getConfResults(includeVoid);
+			out += r.getConfResults(includeVoid, partial);
 		}
 		
 		out += "\n\n";

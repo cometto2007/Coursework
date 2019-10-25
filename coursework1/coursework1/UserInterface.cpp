@@ -27,11 +27,10 @@ vector<int> UserInterface::getUserConfiguration(int puzzleSize)
 	string numbers = "";
 	vector<int> conf;
 	bool retry = true;
+	cin.ignore(numeric_limits<streamsize>::max(), '\n');
 	while (retry == true) {
-		cout << "\nInsert " << puzzleSize << " numbers from 1 to " << puzzleSize + 5 << "(inclusive) without repetition separated by a space\n\n";
-
-		cin.clear();
-		cin.ignore(numeric_limits<streamsize>::max(), '\n');
+		cout << "\nInsert " << puzzleSize << " numbers from 1 to " << puzzleSize + 5 << "(inclusive) without repetition separated by a space\n";
+		
 		getline(cin, numbers);
 
 		if (PuzzleUtility::isComposedByNumber(numbers)) {
@@ -45,16 +44,18 @@ vector<int> UserInterface::getUserConfiguration(int puzzleSize)
 				}
 			}
 			if (set.size() != puzzleSize) {
-				cout << "\nYou put an invalid input, too many item, retry\n";
+				cout << "\nYou put an invalid input, number of item not valid, retry\n";
 			} else {
 				conf = vector<int>(set.begin(), set.end());
+				conf.push_back(0);
 				retry = false;
 			}
 		} else {
 			cout << "\nYou put invalid character, retry\n";
 		}
 	}
-	printOnScreen(PuzzleUtility::printConf(conf));
+	Configuration c(conf);
+	printOnScreen(c.toString());
 	return conf;
 }
 
@@ -84,13 +85,16 @@ vector<vector<int>> UserInterface::generateRandomConfs(int puzzleSize) {
 
 int UserInterface::getResultMenuTask() {
 	int choice;
-	cout << "\n1. Do you want to find a custom partial continuous row and continuous column (including reverse) in any puzzle configuration of the file?\n";
-	cout << "2. Do you want to find a custom partial continuous row and continuous column (including reverse) in all reacheable configuration in any puzzle configuration of the file?\n";
-	cout << "3. Do you want to find all The possible data in all reacheable configuration in any puzzle configuration of the file?\n";
+
+	cout << "\n1. Do you want to find the number of continuous row and continuous column (including reverse) in any puzzle configuration of the file?\n";
+	cout << "2. Do you want to find a custom partial continuous row and continuous column (including reverse) in any puzzle configuration of the file?\n";
+	cout << "3. Do you want to find continuous row and continuous column (including reverse) in all reacheable configuration in any puzzle configuration of the file?\n";
+	cout << "4. Do you want to find a custom partial continuous row and continuous column (including reverse) in all reacheable configuration in any puzzle configuration of the file?\n";
+	cout << "5. Do you want to find all The possible data in all reacheable configuration in any puzzle configuration of the file?\n";
 	cout << "\nInsert your choice\n";
 
 	cin >> choice;
-	while (choice < 1 || choice > 3) {
+	while (choice < 1 || choice > 5) {
 		cout << "\nYou put an invalid input, you have to put a number between 1 to 3, retry\n";
 		cin.clear();
 		cin.ignore(numeric_limits<streamsize>::max(), '\n');

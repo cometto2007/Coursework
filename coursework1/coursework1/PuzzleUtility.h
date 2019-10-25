@@ -19,6 +19,6 @@ public:
 	static string printConfs(vector<vector<int>> confs);
 	static string printConf(vector<int> conf);
 private:
-	static void genRandConf(int i, vector<vector<int>>& confs, int puzzleSize);
+	static void genRandConf(vector<vector<int>>& confs, int puzzleSize);
 };
 

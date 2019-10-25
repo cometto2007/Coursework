@@ -56,10 +56,8 @@
     <ClInclude Include="ExtendedResults.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="H:\Desktop\res.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
+    <ClInclude Include="InfInt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

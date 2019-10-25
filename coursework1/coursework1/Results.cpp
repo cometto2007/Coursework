@@ -3,10 +3,12 @@
 Results::Results(Configuration c) : conf(c) {
 }
 
-string Results::getConfResults(bool includeVoid) {
+string Results::getConfResults(bool includeVoid, int partial) {
 	string res = "";
 
-	int partial = conf.getTable().size();
+	if (partial == 0) {
+		partial = conf.getTable().size();
+	}
 	res += "row = " + to_string(conf.getRow(partial, includeVoid)) + "\n";
 	res += "column = " + to_string(conf.getColumn(partial, includeVoid)) + "\n";
 	res += "reverse row = " + to_string(conf.getReverseRow(partial, includeVoid)) + "\n";
@@ -14,38 +16,42 @@ string Results::getConfResults(bool includeVoid) {
 	return res;
 }
 
-string Results::getReachConfResults() {
+string Results::getReachConfResults(int partial) {
 	string res = "";
-	int partial = conf.getTable().size();
-	unsigned long long n = solutionFormula();
-
-	res += "row = " + to_string(n) + "\n";
-	res += "column = " + to_string(n) + "\n";
-	res += "reverse row = " + to_string(n) + "\n";
-	res += "reverse column = " + to_string(n) + "\n";
+	InfInt n;
+	if (partial == 0) {
+		n = solutionFormula();
+	} else {
+		n = partialSolutionFormula(partial);
+	}
+	
+	res += "row = " + n.toString() + "\n";
+	res += "column = " + n.toString() + "\n";
+	res += "reverse row = " + n.toString() + "\n";
+	res += "reverse column = " + n.toString() + "\n";
 	return res;
 }
 
-unsigned long long Results::solutionFormula() {
+InfInt Results::solutionFormula() {
 	int rowSize = conf.getTable().size();
-	unsigned long long res = partialSolutionFormula(rowSize);
+	InfInt res = partialSolutionFormula(rowSize);
 
 	int contOccurr = conf.getContinuousOccurrence(rowSize - 1);
 	res += (factorial(rowSize * rowSize - rowSize) / 2)* contOccurr;
 	return res;
 }
 
-unsigned long long Results::partialSolutionFormula(int partial) {
+InfInt Results::partialSolutionFormula(int partial) {
 	int rowSize = conf.getTable().size();
 	int pos = rowSize * rowSize - 1 - partial;
 	Configuration c(rowSize);
-	int freq = c.getRow(partial);
+	InfInt freq = c.getRow(partial);
 	int contOccurr = conf.getContinuousOccurrence(partial);
 
 	return freq * (factorial(pos) / 2) * contOccurr;
 }
 
-unsigned long long Results::factorial(int n) {
+InfInt Results::factorial(int n) {
 	if (n > 1) {
 		return factorial(n - 1) * n;
 	} else {

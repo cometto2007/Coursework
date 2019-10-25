@@ -163,12 +163,10 @@
     <ClInclude Include="Configuration.h" />
     <ClInclude Include="ExtendedResults.h" />
     <ClInclude Include="FileManager.h" />
+    <ClInclude Include="InfInt.h" />
     <ClInclude Include="PuzzleUtility.h" />
     <ClInclude Include="Results.h" />
     <ClInclude Include="UserInterface.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="H:\Desktop\res.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

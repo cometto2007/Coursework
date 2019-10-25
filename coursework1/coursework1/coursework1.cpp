@@ -9,7 +9,7 @@
 using namespace std;
 
 void handleResultsDelivery(int task, FileManager* const fm, int puzzleSize) {
-	int partial = (int)sqrt(puzzleSize + 1);
+	int partial = 0;
 	vector<vector<int>> confs = UserInterface::getConfsFromFile(fm, puzzleSize);
 	bool includeVoid = false;
 	string res;
@@ -17,24 +17,28 @@ void handleResultsDelivery(int task, FileManager* const fm, int puzzleSize) {
 	switch (task) {
 	case 1:
 		includeVoid = UserInterface::getIncludeVoid();
-		res = PuzzleUtility::getResults(confs, partial, false, includeVoid);
-		UserInterface::printOnScreen(res);
-		UserInterface::printOnFile(fm, res);
+		res = PuzzleUtility::getResults(confs, 0, false, includeVoid);
 		break;
+
 	case 2:
 		partial = UserInterface::getPartialNum();
-		res = PuzzleUtility::getResults(confs, partial, true, false);
-		UserInterface::printOnScreen(res);
-		UserInterface::printOnFile(fm, res);
+		res = PuzzleUtility::getResults(confs, partial, false, includeVoid);
 		break;
 	case 3:
-		res = PuzzleUtility::getExtendedResults(confs, partial);
-		UserInterface::printOnScreen(res);
-		UserInterface::printOnFile(fm, res);
+		res = PuzzleUtility::getResults(confs, 0, true, false);
+		break;
+	case 4:
+		partial = UserInterface::getPartialNum();
+		res = PuzzleUtility::getResults(confs, partial, true, false);
+		break;
+	case 5:
+		res = PuzzleUtility::getExtendedResults(confs, (int)sqrt(puzzleSize + 1));
 		break;
 	default:
 		break;
 	}
+	UserInterface::printOnScreen(res);
+	UserInterface::printOnFile(fm, res);
 }
 
 int main()

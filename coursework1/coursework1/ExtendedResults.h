@@ -5,7 +5,7 @@ class ExtendedResults :
 
 public:
 	ExtendedResults(Configuration c, int p);
-	string getReachConfResults() override;
+	string getReachConfResults(int partial) override;
 private:
 	int partial;
 };
