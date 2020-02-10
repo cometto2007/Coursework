@@ -7,13 +7,13 @@
 class Results {
 protected:
 	Configuration conf;
-	InfInt solutionFormula();
-	InfInt partialSolutionFormula(int partial);
+	InfInt solutionFormula() const;
+	InfInt partialSolutionFormula(int partial) const;
 public:
 	Results(Configuration c);
-	string getConfResults(bool includeVoid, int partial);
+	string getConfResults(bool includeVoid, int partial) const;
 	virtual string getReachConfResults(int partial);
 private:
-	InfInt factorial(int n);
+	InfInt factorial(int n) const;
 };
 

@@ -31,8 +31,7 @@ Configuration::Configuration(int size) {
 	}
 }
 
-Configuration::Configuration(const Configuration& src) :
-	table(src.table) 
+Configuration::Configuration(const Configuration& src) : table(src.table) 
 {
 }
 
@@ -44,7 +43,7 @@ Configuration::~Configuration()
 	table.clear();
 }
 
-vector<vector<int>> Configuration::getTable() const
+vector<vector<int>> Configuration::Table() const
 {
 	return table;
 }
@@ -67,39 +66,6 @@ void Configuration::setTable(vector<vector<int>> newTable)
 bool Configuration::isFinal()
 {
 	return table[table.size() - 1].back() == 0;
-}
-
-Coord Configuration::getVoidTile()
-{
-	for (rsize_t i = 0; i < table.size(); i++) {
-		for (rsize_t j = 0; j < table.size(); j++) {
-			if (table[i][j] == 0) {
-				return {(int)i, (int)j};
-			}
-		}
-	}
-	return { -1, -1 };
-}
-
-vector<Coord> Configuration::getAvailableMoves()
-{
-	Coord voidTile = getVoidTile();
-	vector<Coord> moves(0);
-	
-	if (voidTile.x - 1 >= 0) {
-		moves.push_back({ voidTile.x - 1, voidTile.y });
-	}
-	if (voidTile.x + 1 <= 3) {
-		moves.push_back({ voidTile.x + 1, voidTile.y });
-	}
-	if (voidTile.y + 1 <= 3) {
-		moves.push_back({ voidTile.x, voidTile.y + 1 });
-	}
-	if (voidTile.y - 1 >= 0) {
-		moves.push_back({ voidTile.x, voidTile.y - 1 });
-	}
-
-	return moves;
 }
 
 void Configuration::swapTiles(Coord c1, Coord c2)
@@ -125,7 +91,7 @@ string Configuration::toString()
 	return out;
 }
 
-int Configuration::getRow(int partial, bool voidTile)
+int Configuration::getRow(int partial, bool voidTile) const
 {
 	int count = 0;
 	for (vector<int> v : table) {
@@ -138,7 +104,8 @@ int Configuration::getRow(int partial, bool voidTile)
 	return count;
 }
 
-bool Configuration::isContinuous(vector<int> v, bool voidTile) {
+bool Configuration::isContinuous(vector<int> v, bool voidTile) const
+{
 	int prec = v[0];
 	for (rsize_t i = 0; i < v.size(); i++) {
 		if (v[i] == 0 && i == v.size() - 1 && voidTile) {
@@ -152,7 +119,8 @@ bool Configuration::isContinuous(vector<int> v, bool voidTile) {
 	return true;
 }
 
-bool Configuration::isReverseContinuous(vector<int> v, bool voidTile) {
+bool Configuration::isReverseContinuous(vector<int> v, bool voidTile) const
+{
 	int prec = v[0];
 	for (rsize_t i = 0; i < v.size(); i++) {
 		if (v[i] == 0 && i == v.size() - 1 && voidTile) {
@@ -166,7 +134,7 @@ bool Configuration::isReverseContinuous(vector<int> v, bool voidTile) {
 	return true;
 }
 
-int Configuration::getColumn(int partial, bool voidTile)
+int Configuration::getColumn(int partial, bool voidTile) const
 {
 	vector<int> v;
 	int count = 0;
@@ -184,7 +152,7 @@ int Configuration::getColumn(int partial, bool voidTile)
 	return count;
 }
 
-int Configuration::getReverseRow(int partial, bool voidTile)
+int Configuration::getReverseRow(int partial, bool voidTile) const
 {
 	int count = 0;
 	for (vector<int> v : table) {
@@ -197,7 +165,7 @@ int Configuration::getReverseRow(int partial, bool voidTile)
 	return count;
 }
 
-int Configuration::getReverseColumn(int partial, bool voidTile)
+int Configuration::getReverseColumn(int partial, bool voidTile) const
 {
 	vector<int> v;
 	int count = 0;
@@ -215,7 +183,8 @@ int Configuration::getReverseColumn(int partial, bool voidTile)
 	return count;
 }
 
-int Configuration::getContinuousOccurrence(int partial) {
+int Configuration::getContinuousOccurrence(int partial) const
+{
 	vector<int> v = getTableAsVector();
 	sort(v.begin(), v.end());
 	int count = 0;
@@ -228,7 +197,8 @@ int Configuration::getContinuousOccurrence(int partial) {
 	return count;
 }
 
-bool Configuration::isValid() {
+bool Configuration::isValid() const
+{
 	set<int> set;
 	for (vector<int> v : table) {
 		for (int n : v) {

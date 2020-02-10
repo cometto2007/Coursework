@@ -3,11 +3,11 @@
 Results::Results(Configuration c) : conf(c) {
 }
 
-string Results::getConfResults(bool includeVoid, int partial) {
+string Results::getConfResults(bool includeVoid, int partial) const {
 	string res = "";
 
 	if (partial == 0) {
-		partial = conf.getTable().size();
+		partial = conf.Table().size();
 	}
 	res += "row = " + to_string(conf.getRow(partial, includeVoid)) + "\n";
 	res += "column = " + to_string(conf.getColumn(partial, includeVoid)) + "\n";
@@ -32,8 +32,8 @@ string Results::getReachConfResults(int partial) {
 	return res;
 }
 
-InfInt Results::solutionFormula() {
-	int rowSize = conf.getTable().size();
+InfInt Results::solutionFormula() const {
+	int rowSize = conf.Table().size();
 	InfInt res = partialSolutionFormula(rowSize);
 
 	int contOccurr = conf.getContinuousOccurrence(rowSize - 1);
@@ -41,8 +41,8 @@ InfInt Results::solutionFormula() {
 	return res;
 }
 
-InfInt Results::partialSolutionFormula(int partial) {
-	int rowSize = conf.getTable().size();
+InfInt Results::partialSolutionFormula(int partial) const {
+	int rowSize = conf.Table().size();
 	int pos = rowSize * rowSize - 1 - partial;
 	Configuration c(rowSize);
 	InfInt freq = c.getRow(partial);
@@ -51,11 +51,10 @@ InfInt Results::partialSolutionFormula(int partial) {
 	return freq * (factorial(pos) / 2) * contOccurr;
 }
 
-InfInt Results::factorial(int n) {
+InfInt Results::factorial(int n) const {
 	if (n > 1) {
 		return factorial(n - 1) * n;
 	} else {
 		return 1;
 	}
 }
-

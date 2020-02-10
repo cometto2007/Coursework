@@ -40,7 +40,7 @@ vector<vector<int>> PuzzleUtility::genRandConfs(int numConf, int puzzleSize)
 }*/
 
 void PuzzleUtility::genRandConf(vector<vector<int>>& confs, int puzzleSize) {
-	for (int i = 0; i < confs.size(); i++) {
+	for (size_t i = 0; i < confs.size(); i++) {
 		time_t  seed = chrono::system_clock::now().time_since_epoch().count();
 		std::default_random_engine e((unsigned int)seed);
 
